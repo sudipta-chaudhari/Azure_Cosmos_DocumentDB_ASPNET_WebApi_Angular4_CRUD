@@ -1,0 +1,225 @@
+﻿<style type="text/css">
+    input.ng-invalid.ng-dirty.ng-touched {
+        border: 2px solid Red;
+        border-left: 5px solid #a94442;
+    }
+
+    /*valid and required show green*/
+    .ng-valid[required] {
+        border-left: 5px solid #42A948;
+    }
+
+    .error {
+        padding: 12px;
+        background-color: rgba(255, 0, 0, 0.2);
+        color: red;
+    }
+
+    #spinner {
+        background-color: rgba(49, 37, 37, 0.2);
+        border-radius: 6px;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        content: " ";
+        text-align: center;
+        z-index: 9999;
+        /*Center Div*/
+        /* Safari, Opera, and Chrome */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+        /* Firefox */
+        display: -moz-box;
+        -moz-box-pack: center;
+        -moz-box-align: center;
+        /* Internet Explorer 10 */
+        display: -ms-flexbox;
+        -ms-flex-pack: center;
+        -ms-flex-align: center;
+    }
+
+    .lblTextLeft {
+        display: block;
+        text-align: left;
+    }
+</style>
+
+<div *ngIf="isLoadingData" style="text-align:center" id="spinner">
+    <img src="./Content/page-loader.gif" />
+</div>
+
+<div style="padding-top:10px">
+    <p-dataTable [value]="products" [responsive]="true" [rows]="5" [paginator]="true">
+        <p-column field="Id" hidden="hidden"></p-column>
+        <p-column field="Name" header="Name" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+        <p-column field="Category" header="Category" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+        <p-column field="Price" header="Price" sortable="true" [filter]="true" filterPlaceholder="Search"></p-column>
+        <p-column>
+            <ng-template let-product="rowData" pTemplate="body">
+                <button type="button" pButton (click)="editProduct(product)" icon="fa-pencil-square-o"></button>
+                <button type="button" pButton (click)="deleteProduct(product)" icon="fa-times"></button>
+                <!--<button type="button" pButton (click)="deleteProduct(product.id)" icon="fa-times"></button>-->
+            </ng-template>
+        </p-column>
+    </p-dataTable>
+</div>
+
+<p-dialog header="Add Product" [(visible)]="displayAddDialog" modal="true" width="450" height="400">
+    <!-- Add Product :Using 'Reactive Forms' approach-->
+    <form #addProductForm="ngForm" [formGroup]="addProductFG" class="form-horizontal" style="width:400px;height:400px">
+        <div *ngIf="isAdd">
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-md-1 control-label lblTextLeft" for="name">Name</label>
+                    <div class="col-md-12">
+                        <input id="name" name="name" type="text" placeholder="Product Name" class="form-control input-md"
+                               formControlName="name" [(ngModel)]="product.Name" required minLength="5" maxLength="10" />
+
+                        <div *ngIf="addProductFG.get('name').hasError('required') && (addProductFG.get('name').dirty || addProductFG.get('name').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Name is required</span>
+                        </div>
+                        <div *ngIf="addProductFG.get('name').touched && addProductFG.get('name').hasError('nospace')">
+                            <span class="text-danger glyphicon glyphicon-alert">Name cannot contain space</span>
+                        </div>
+                        <div *ngIf="addProductFG.get('name').hasError('minlength') && (addProductFG.get('name').dirty || addProductFG.get('name').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Name should be atleast 2 characters long</span>
+                        </div>
+                        <div *ngIf="addProductFG.get('name').hasError('maxlength') && (addProductFG.get('name').dirty || addProductFG.get('name').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Name should be atmost 10 characters long</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-1 control-label text-left lblTextLeft" for="category">Category</label>
+                    <div class="col-md-12">
+                        <input id="category" name="category" type="text" placeholder="Product Category" class="form-control input-md"
+                               formControlName="category" required [(ngModel)]="product.Category" />
+
+                        <div *ngIf="addProductFG.get('category').touched && addProductFG.get('category').hasError('required')">
+                            <span class="text-danger glyphicon glyphicon-alert">Category is required</span>
+                        </div>
+                        <div *ngIf="addProductFG.get('category').touched && addProductFG.get('category').hasError('nospace')">
+                            <span class="text-danger glyphicon glyphicon-alert">Category cannot contain space</span>
+                        </div>
+                        <div *ngIf="addProductFG.get('category').hasError('minlength') && (addProductFG.get('category').dirty || addProductFG.get('category').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Category should be atleast 2 characters long</span>
+                        </div>
+                        <div *ngIf="addProductFG.get('category').hasError('maxlength') && (addProductFG.get('category').dirty || addProductFG.get('category').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Category should be atmost 5 characters long</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-1 control-label text-left lblTextLeft" for="price">Price</label>
+                    <div class="col-md-12">
+                        <input id="price" name="price" type="number" placeholder="Product Price" class="form-control input-md"
+                               formControlName="price" required [(ngModel)]="product.Price" />
+
+                        <div *ngIf="addProductFG.get('price').touched && addProductFG.get('price').hasError('required')">
+                            <span class="text-danger glyphicon glyphicon-alert">Price is required</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-1 control-label"></label>
+                    <div class="col-md-12">
+                        <button type="button" id="btnSave" name="btnSave" class="btn btn-primary" [disabled]="!addProductFG.valid"
+                                (click)="addProduct(product);addProductForm.reset();">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                            Save
+                        </button>
+                        <button id="btnCancel" name="btnCancel" class="btn btn-warning" (click)="clearData();addProductForm.reset();">
+                            <span class="glyphicon glyphicon-floppy-remove"></span>Cancel
+                        </button>
+                        <br />
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </form>
+</p-dialog>
+
+<button type="button" (click)="addProductDialog()" pButton icon="fa-external-link-square" label="Add Product"></button>
+
+<p-dialog header="Edit Product" [(visible)]="displayEditDialog" modal="true" width="450" height="400">
+    <!-- Edit Product :Using 'Reactive Forms' approach-->
+    <form #editProductForm="ngForm" [formGroup]="editProductFG" class="form-horizontal" style="width:400px;height:400px">
+        <div *ngIf="isEdit">
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-md-1 control-label lblTextLeft" for="name">Name</label>
+                    <div class="col-md-12">
+                        <input id="name" name="name" type="text" placeholder="Product Name" class="form-control input-md"
+                               formControlName="name" [(ngModel)]="product.Name" required minLength="5" maxLength="10" />
+
+                        <div *ngIf="editProductFG.get('name').hasError('required') && (editProductFG.get('name').dirty || editProductFG.get('name').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Name is required</span>
+                        </div>
+                        <div *ngIf="editProductFG.get('name').touched && editProductFG.get('name').hasError('nospace')">
+                            <span class="text-danger glyphicon glyphicon-alert">Name cannot contain space</span>
+                        </div>
+                        <div *ngIf="editProductFG.get('name').hasError('minlength') && (editProductFG.get('name').dirty || editProductFG.get('name').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Name should be atleast 2 characters long</span>
+                        </div>
+                        <div *ngIf="editProductFG.get('name').hasError('maxlength') && (editProductFG.get('name').dirty || editProductFG.get('name').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Name should be atmost 10 characters long</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-1 control-label text-left lblTextLeft" for="category">Category</label>
+                    <div class="col-md-12">
+                        <input id="category" name="category" type="text" placeholder="Product Category" class="form-control input-md"
+                               formControlName="category" required [(ngModel)]="product.Category" />
+
+                        <div *ngIf="editProductFG.get('category').touched && editProductFG.get('category').hasError('required')">
+                            <span class="text-danger glyphicon glyphicon-alert">Category is required</span>
+                        </div>
+                        <div *ngIf="editProductFG.get('category').touched && editProductFG.get('category').hasError('nospace')">
+                            <span class="text-danger glyphicon glyphicon-alert">Category cannot contain space</span>
+                        </div>
+                        <div *ngIf="editProductFG.get('category').hasError('minlength') && (editProductFG.get('category').dirty || editProductFG.get('category').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Category should be atleast 2 characters long</span>
+                        </div>
+                        <div *ngIf="editProductFG.get('category').hasError('maxlength') && (editProductFG.get('category').dirty || editProductFG.get('category').touched)">
+                            <span class="text-danger glyphicon glyphicon-alert">Category should be atmost 5 characters long</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-1 control-label text-left lblTextLeft" for="price">Price</label>
+                    <div class="col-md-12">
+                        <input id="price" name="price" type="number" placeholder="Product Price" class="form-control input-md"
+                               formControlName="price" required [(ngModel)]="product.Price" />
+
+                        <div *ngIf="editProductFG.get('price').touched && editProductFG.get('price').hasError('required')">
+                            <span class="text-danger glyphicon glyphicon-alert">Price is required</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-1 control-label"></label>
+                    <div class="col-md-12">
+                        <button id="btnSave" name="btnSave" class="btn btn-primary"
+                                type="submit" [disabled]="!editProductFG.valid" (click)="updateProduct(product);editProductForm.reset();">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                            Save
+                        </button>
+                        <button id="btnCancel" name="btnCancel" class="btn btn-warning" (click)="clearData();editProductForm.reset();">
+                            <span class="glyphicon glyphicon-floppy-remove"></span>Cancel
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </form>
+</p-dialog>

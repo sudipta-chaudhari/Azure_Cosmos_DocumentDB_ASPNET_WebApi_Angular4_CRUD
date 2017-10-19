@@ -1,0 +1,52 @@
+﻿<style type="text/css">
+    #spinner {
+        background-color: rgba(49, 37, 37, 0.2);
+        border-radius: 6px;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        content: " ";
+        text-align: center;
+        z-index: 9999;
+        /*Center Div*/
+        /* Safari, Opera, and Chrome */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+        /* Firefox */
+        display: -moz-box;
+        -moz-box-pack: center;
+        -moz-box-align: center;
+        /* Internet Explorer 10 */
+        display: -ms-flexbox;
+        -ms-flex-pack: center;
+        -ms-flex-align: center;
+    }
+</style>
+
+<h2>Upload Files</h2>
+
+<div *ngIf="isLoadingData" style="text-align:center" id="spinner">
+    <img src="./Content/page-loader.gif" />
+</div>
+
+<input #fileUpload type="file" (change)="fileChangeEvent($event)" placeholder="Upload file..." multiple accept=".pdf" /><br />
+
+<button type="button" (click)="upload()">Upload</button>
+<button type="button" (click)="cancelUpload()">Cancel</button>
+
+<div *ngIf="filesToUpload?.length > 0"><br /><p>{{filesToUpload?.length}} files selected : </p></div>
+
+<ul>
+    <li *ngFor="let fileName of selectedFileNames; let i = index">
+        {{fileName}}
+    </li>
+</ul>
+
+<div [innerHtml]="uploadResult"></div>
+
+<div style="color:red">
+    {{errorMessage}}
+</div>

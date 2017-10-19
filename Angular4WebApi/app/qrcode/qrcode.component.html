@@ -1,0 +1,65 @@
+﻿<style type="text/css">
+    #spinner {
+        background-color: rgba(49, 37, 37, 0.2);
+        border-radius: 6px;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        content: " ";
+        text-align: center;
+        z-index: 9999;
+        /*Center Div*/
+        /* Safari, Opera, and Chrome */
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+        /* Firefox */
+        display: -moz-box;
+        -moz-box-pack: center;
+        -moz-box-align: center;
+        /* Internet Explorer 10 */
+        display: -ms-flexbox;
+        -ms-flex-pack: center;
+        -ms-flex-align: center;
+    }
+</style>
+
+<h2>QR Code</h2>
+
+<div *ngIf="isLoadingData" style="text-align:center" id="spinner">
+    <img src="./Content/page-loader.gif" />
+</div>
+
+<p><b>Enter PDF filename :</b></p>
+
+<p>
+    <input #filename placeholder="File Name" class="input-sm" style="width:100%;max-width:100%" />
+</p>
+
+<div>
+    <button class="btn btn-info" (click)="generateQRCode(filename.value)">
+        <span class="glyphicon glyphicon-barcode"></span>
+        Generate QR Code
+    </button>
+</div>
+
+<div style="padding-top:10px">
+    <div *ngIf="base64encodedQRImgString?.length > 0" class="well well-sm">
+        <b>Encoded QR Data : </b>
+    </div>
+    <p *ngIf="base64encodedQRImgString?.length > 0">
+        <a href="{{blobPDFUri}}">{{blobPDFUri}}</a>
+    </p>
+</div>
+
+<!-- Show QRCode -->
+<div [innerHtml]="qrResult"></div>
+
+<div>
+    <button *ngIf="base64encodedQRImgString?.length > 0" class="btn btn-info" (click)="downloadQRCode()">
+        <span class="glyphicon glyphicon-download"></span>
+        Download QR Code
+    </button>
+</div>
